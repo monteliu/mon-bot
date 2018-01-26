@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			
+		},
+		{
+
+		}
+	],
+	"rootPath": "github.com/monteliu/mon-bot"
+}
