@@ -57,7 +57,7 @@ It all done.
 
 Inspired By
 =============
-
+-  LineBotTemplate (http://www.evanlin.com/create-your-line-bot-golang/) 
 - [Golang (heroku) で LINE Bot 作ってみる](http://qiita.com/dongri/items/ba150f04a98e96b160e7)
 - [LINE BOT をとりあえずタダで Heroku で動かす](http://qiita.com/yuya_takeyama/items/0660a59d13e2cd0b2516)
 - [阿美語萌典 BOT](https://github.com/miaoski/amis-linebot)
