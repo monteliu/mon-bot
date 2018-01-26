@@ -58,8 +58,9 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
-	bot.reply_message(event.reply_token, TextSendMessage(text='愛醬出錯了！\n作者可能會察看此錯誤報告'))
+    # r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
+    msg = '愛醬出錯了！\n作者可能會察看此錯誤報告'
+    bot.reply_message(event.reply_token, TextSendMessage(text=msg))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
