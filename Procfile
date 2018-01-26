@@ -1,2 +1,1 @@
-web: monbot
-
+web: python app.py
