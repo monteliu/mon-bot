@@ -58,10 +58,6 @@ Inspired By
 - [LINE BOT をとりあえずタダで Heroku で動かす](http://qiita.com/yuya_takeyama/items/0660a59d13e2cd0b2516)
 - [阿美語萌典 BOT](https://github.com/miaoski/amis-linebot)
 
-Project52
----------------
-
-It is one of my [project 52](https://github.com/kkdai/project52).
 
 
 License
