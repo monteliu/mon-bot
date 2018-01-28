@@ -81,11 +81,12 @@ def handle_message(event):
         print('not match') 
     else:
         print(matchData)
-        if matchData.fields.Type == 'image':
-            image = matchData.fields.image[0].url
+        
+        if matchData['fields']['Type'] == 'image':
+            image = matchData['fields']['image'][0]['url']
             bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-        elif matchData.fields.Type == 'text':
-            msg = matchData.fields.text
+        elif matchData['fields']['Type'] == 'text':
+            msg = matchData['fields']['text']
             bot.push_message(push_id,TextSendMessage(text=msg))
     
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
