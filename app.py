@@ -62,12 +62,12 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event) 
+    print(**get_id(event)) 
     r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     msg = 'test'
     image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
-    bot.push_message(event.source.userid,TextSendMessage(text=msg))
+    bot.push_message(**get_id(event),TextSendMessage(text=msg))
     ##bot.reply_message(event.reply_token, ImageMessage(original_content_url=image,preview_image_url=image))
 
 
