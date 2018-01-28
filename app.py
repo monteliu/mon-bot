@@ -25,6 +25,7 @@ imgur = None
 
 def _post(endpoint, **json):
     try:
+        r=0
         #r = requests.post(server_url + endpoint, json=json, timeout=30)
         
         #print('debug [%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
