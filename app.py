@@ -41,6 +41,7 @@ def get_id(event):
 
 @app.route("/callback", methods=['POST'])
 def callback():
+    print('test 1111') 
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
 
@@ -59,6 +60,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print('test 1112') 
     r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     msg = 'test'
     bot.reply_message(event.reply_token, TextSendMessage(text=msg))
