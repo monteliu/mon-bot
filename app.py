@@ -77,7 +77,7 @@ def handle_message(event):
     image = ''
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',msg)
-    if matchData.id is None:
+    if not hasattr(matchData,'id'):
         print('not match') 
     else:
         print(matchData)
