@@ -25,9 +25,10 @@ imgur = None
 
 def _post(endpoint, **json):
     try:
-        r = requests.post(server_url + endpoint, json=json, timeout=30)
+        #r = requests.post(server_url + endpoint, json=json, timeout=30)
+        print(airtable.get_all())
         print('debug [%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
-        return r
+        #return r
     except:
         pass
 
