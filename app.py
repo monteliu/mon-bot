@@ -76,7 +76,7 @@ def handle_message(event):
     msg = event.message.text
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',msg)
-    if matchData == null:
+    if matchData is None:
         print('not match') 
     else:
         print(matchData)
