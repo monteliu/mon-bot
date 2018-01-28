@@ -23,7 +23,7 @@ imgur = None
 
 def _post(endpoint, **json):
     try:
-        r = requests.post(server_url + endpoint, json=json, timeout=30)
+       # r = requests.post(server_url + endpoint, json=json, timeout=30)
         print('[%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
         return r
     except:
@@ -58,7 +58,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    # r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
+     r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     msg = 'test'
     bot.reply_message(event.reply_token, TextSendMessage(text=msg))
 
