@@ -62,7 +62,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(**get_id(event)) 
+    print(event) 
     r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     msg = 'test'
     image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
