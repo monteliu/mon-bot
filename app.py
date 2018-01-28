@@ -19,6 +19,7 @@ bot_id = os.environ.get('bot_id', None)
 handler = WebhookHandler(os.environ.get('ChannelSecret'))
 bot = LineBotApi(os.environ.get('ChannelAccessToken'))
 server_url = os.environ.get('server_url')
+airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 
 
@@ -129,6 +130,7 @@ def postback(event):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
+    
     print('test start') 
     app.run(host='0.0.0.0', port=port, threaded=True)
     
