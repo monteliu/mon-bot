@@ -27,7 +27,7 @@ def _post(endpoint, **json):
     try:
         #r = requests.post(server_url + endpoint, json=json, timeout=30)
         
-        print('debug [%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
+        #print('debug [%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
         #return r
     except:
         pass
@@ -62,7 +62,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event) 
+    #print(event) 
     #r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     push_id = ''
     if  event.source.type == 'user':
@@ -73,7 +73,14 @@ def handle_message(event):
         push_id = event.source.room_id
     
     msg = event.message.text
-    print(airtable.match('Key',msg))
+    #print(airtable.match('Key',msg))
+    matchData = airtable.match('Key',msg)
+    if matchData == null:
+        print('not match') 
+    else:
+        print(matchData)
+        
+    
     image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
     bot.push_message(push_id,TextSendMessage(text=msg))
