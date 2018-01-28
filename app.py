@@ -74,18 +74,23 @@ def handle_message(event):
         push_id = event.source.room_id
     
     msg = event.message.text
+    image = ''
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',msg)
-    if matchData is None:
+    if matchData.id is None:
         print('not match') 
     else:
         print(matchData)
-        
+        if matchData.fields.Type == 'image':
+            image = matchData.fields.image[0].url
+            bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+        elif matchData.fields.Type == 'text':
+            msg = matchData.fields.text
+            bot.push_message(push_id,TextSendMessage(text=msg))
     
-    image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
-    bot.push_message(push_id,TextSendMessage(text=msg))
-    bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+    #bot.push_message(push_id,TextSendMessage(text=msg))
+    
     ##bot.reply_message(event.reply_token, ImageMessage(original_content_url=image,preview_image_url=image))
 
 
