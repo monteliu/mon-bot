@@ -12,7 +12,7 @@ from linebot.models import (
     TextMessage, StickerMessage, ImageMessage, TextSendMessage,
 )
 from imgurpython import ImgurClient
-
+from airtable import Airtable
 
 app = Flask(__name__)
 bot_id = os.environ.get('bot_id', None)
