@@ -92,7 +92,7 @@ def handle_image(event):
                 f.write(chunk)
         imgur = get_imgur_client()
         if imgur is None:
-            msg = '圖床目前無法訪問 愛醬攤手'
+            msg = '圖床目前無法訪問'
         else:
             for i in range(100):
                 try:
@@ -100,7 +100,7 @@ def handle_image(event):
                     msg = image['link']
                     break
                 except Exception as e:
-                    msg = '愛醬上傳圖片錯誤了...\n%s' % str(e)
+                    msg = '上傳圖片錯誤了...\n%s' % str(e)
                     time.sleep(0.2)
         os.remove(path)
         bot.reply_message(event.reply_token, TextSendMessage(text=msg))
