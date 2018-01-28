@@ -9,7 +9,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent, FollowEvent, UnfollowEvent, JoinEvent, LeaveEvent, PostbackEvent,
-    TextMessage, StickerMessage, ImageMessage, TextSendMessage,
+    TextMessage, StickerMessage, ImageMessage, TextSendMessage,ImageSendMessage,
 )
 from imgurpython import ImgurClient
 from airtable import Airtable
@@ -72,10 +72,11 @@ def handle_message(event):
     elif event.source.type == 'room':
         push_id = event.source.room_id
     
-    msg = 'test'
+    msg = event.message.text
     image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
     bot.push_message(push_id,TextSendMessage(text=msg))
+    bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
     ##bot.reply_message(event.reply_token, ImageMessage(original_content_url=image,preview_image_url=image))
 
 
