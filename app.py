@@ -66,8 +66,8 @@ def handle_message(event):
     r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     msg = 'test'
     image = 'https://dl.airtable.com/r7pvuVjRSKiGjLvU3GBb_%E6%93%B7%E5%8F%96A.PNG'
-    #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
-    bot.reply_message(event.reply_token, ImageMessage(id=1,image))
+    bot.reply_message(event.reply_token, TextSendMessage(text=msg))
+    bot.reply_message(event.reply_token, ImageMessage(original_content_url=image))
 
 
 @handler.add(MessageEvent, message=StickerMessage)
