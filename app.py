@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-import "github.com/line/line-bot-sdk-go/linebot"
+
 from requests import post
 
 from flask import Flask, request, abort
