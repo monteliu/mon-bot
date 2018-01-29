@@ -60,7 +60,7 @@ def callback():
 
     return 'OK'
 
-def MatchAction(matchData):
+def MatchAction(push_id,matchData):
     print(matchData)
     if matchData['fields']['Type'] == 'image':
         Images = matchData['fields']['image']
@@ -94,11 +94,11 @@ def handle_message(event):
         for record in matchData:
             rKey = record['fields']['Key']
             if event_msg.find(rKey) > -1 :
-                MatchAction(record)
+                MatchAction(push_id,record)
         #print(matchData) 
     else:
         #print(matchData)
-        MatchAction(matchData)
+        MatchAction(push_id,matchData)
         # if matchData['fields']['Type'] == 'image':
             # Images = matchData['fields']['image']
             # for imgdata in Images:
