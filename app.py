@@ -91,7 +91,7 @@ def handle_message(event):
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
-        matchData = airtable.search('rule','include')
+        matchData = airtable.search('rule','include',sort='CreateTime')
         for record in matchData:
             rKey = record['fields']['Key']
             if event_msg.find(rKey) > -1 :
