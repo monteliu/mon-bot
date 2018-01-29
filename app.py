@@ -60,6 +60,18 @@ def callback():
 
     return 'OK'
 
+def MatchAction(matchData):
+    print(matchData)
+    if matchData['fields']['Type'] == 'image':
+        Images = matchData['fields']['image']
+        for imgdata in Images:
+            image = imgdata['url']
+            bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+        #image = matchData['fields']['image'][0]['url']
+        #bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+    elif matchData['fields']['Type'] == 'text':
+        msg = matchData['fields']['text']
+        bot.push_message(push_id,TextSendMessage(text=msg))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -72,27 +84,31 @@ def handle_message(event):
         push_id = event.source.group_id
     elif event.source.type == 'room':
         push_id = event.source.room_id
-    
-    msg = event.message.text
+    event_msg = event.message.text
+    msg = ''
     image = ''
     #print(airtable.match('Key',msg))
-    matchData = airtable.match('Key',msg)
+    matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
         matchData = airtable.search('rule','include')
-        print(matchData) 
+        for record in matchData:
+            rKey = record['fields']['Key']
+            if event_msg.find(rKey) > -1 :
+                MatchAction(record)
+        #print(matchData) 
     else:
-        print(matchData)
-        
-        if matchData['fields']['Type'] == 'image':
-            Images = matchData['fields']['image']
-            for imgdata in Images:
-                image = imgdata['url']
-                bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-            #image = matchData['fields']['image'][0]['url']
-            #bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-        elif matchData['fields']['Type'] == 'text':
-            msg = matchData['fields']['text']
-            bot.push_message(push_id,TextSendMessage(text=msg))
+        #print(matchData)
+        MatchAction(matchData)
+        # if matchData['fields']['Type'] == 'image':
+            # Images = matchData['fields']['image']
+            # for imgdata in Images:
+                # image = imgdata['url']
+                # bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+            # #image = matchData['fields']['image'][0]['url']
+            # #bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+        # elif matchData['fields']['Type'] == 'text':
+            # msg = matchData['fields']['text']
+            # bot.push_message(push_id,TextSendMessage(text=msg))
     
     #bot.reply_message(event.reply_token, TextSendMessage(text=msg))
     #bot.push_message(push_id,TextSendMessage(text=msg))
