@@ -46,7 +46,7 @@ def get_id(event):
 @app.route("/callback", methods=['POST'])
 def callback():
     print('test 1111') 
-    print(request) 
+    #print(request) 
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
 
