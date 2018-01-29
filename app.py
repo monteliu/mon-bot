@@ -78,16 +78,16 @@ def handle_message(event):
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',msg)
     if 'id' not in matchData:
-		matchData = airtable.search('rule','include')
+        matchData = airtable.search('rule','include')
         print(matchData) 
     else:
         print(matchData)
         
         if matchData['fields']['Type'] == 'image':
-			Images = matchData['fields']['image']
-			for imgdata in Images:
-			    image = imgdata['url']
-				bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+            Images = matchData['fields']['image']
+            for imgdata in Images:
+                image = imgdata['url']
+                bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
             #image = matchData['fields']['image'][0]['url']
             #bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
         elif matchData['fields']['Type'] == 'text':
