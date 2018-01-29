@@ -125,7 +125,7 @@ def handle_sticker(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     _post('/image', **get_id(event))
-
+    print(event) 
     # def get_imgur_client():
         # global imgur
         # if imgur is None:
