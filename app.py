@@ -25,7 +25,8 @@ imgur = None
 
 def _post(endpoint, **json):
     try:
-        r=0
+        print(endpoint)
+        print('debug [%s] [%s]' % (r.status_code, json['message']))
         #r = requests.post(server_url + endpoint, json=json, timeout=30)
         
         #print('debug [%s] [%s]' % (r.status_code, json['message'])) #用來檢測heroku沒有將內容傳送過來的問題 ...吃字
@@ -125,35 +126,35 @@ def handle_sticker(event):
 def handle_image(event):
     _post('/image', **get_id(event))
 
-    def get_imgur_client():
-        global imgur
-        if imgur is None:
-            try:
-                return ImgurClient(os.environ.get('imgur_id'), os.environ.get('imgur_secret'))
-            except:
-                return None
-        return None
+    # def get_imgur_client():
+        # global imgur
+        # if imgur is None:
+            # try:
+                # return ImgurClient(os.environ.get('imgur_id'), os.environ.get('imgur_secret'))
+            # except:
+                # return None
+        # return None
 
-    if event.source.type == 'user':
-        path = '%s.tmp' % event.message.id
-        message_content = bot.get_message_content(event.message.id)
-        with open(path, 'wb') as f:
-            for chunk in message_content.iter_content():
-                f.write(chunk)
-        imgur = get_imgur_client()
-        if imgur is None:
-            msg = '圖床目前無法訪問'
-        else:
-            for i in range(100):
-                try:
-                    image = imgur.upload_from_path(path)
-                    msg = image['link']
-                    break
-                except Exception as e:
-                    msg = '上傳圖片錯誤了...\n%s' % str(e)
-                    time.sleep(0.2)
-        os.remove(path)
-        bot.reply_message(event.reply_token, TextSendMessage(text=msg))
+    # if event.source.type == 'user':
+        # path = '%s.tmp' % event.message.id
+        # message_content = bot.get_message_content(event.message.id)
+        # with open(path, 'wb') as f:
+            # for chunk in message_content.iter_content():
+                # f.write(chunk)
+        # imgur = get_imgur_client()
+        # if imgur is None:
+            # msg = '圖床目前無法訪問'
+        # else:
+            # for i in range(100):
+                # try:
+                    # image = imgur.upload_from_path(path)
+                    # msg = image['link']
+                    # break
+                # except Exception as e:
+                    # msg = '上傳圖片錯誤了...\n%s' % str(e)
+                    # time.sleep(0.2)
+        # os.remove(path)
+        # bot.reply_message(event.reply_token, TextSendMessage(text=msg))
 
 
 @handler.add(FollowEvent)
@@ -180,6 +181,6 @@ def postback(event):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     
-    print('test start') 
+    print('bot start') 
     app.run(host='0.0.0.0', port=port, threaded=True)
     
