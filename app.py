@@ -105,8 +105,8 @@ def handle_message(event):
             start_idx = -1
             end_idx = -1
             if len(rKeys) > 1:
-                start_idx = event_msg.rindex(rKeys[0]) + len(rKeys[0])
-                end_idx = event_msg.rindex(rKeys[1],start_idx)
+                start_idx = event_msg.find(rKeys[0]) + len(rKeys[0])
+                end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
                 Smsg = event_msg[start_idx:end_idx]
                 MatchAction(push_id,record,Smsg)
