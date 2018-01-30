@@ -98,26 +98,28 @@ def handle_message(event):
     if 'id' not in matchData:
     
         includeCount = 0
+        
+        matchData = airtable.search('Type','funcS',sort='CreateTime')
+        for record in matchData:
+            rKeys = record['fields']['Key'].split('%s')
+            start_idx = -1
+            end_idx = -1
+            if len(rKeys) > 1:
+                start_idx = event_msg.rindex(rKeys[0]) + len(rKeys[0])
+                end_idx = event_msg.rindex(rKeys[1],start_idx)
+            if start_idx > -1 and end_idx>start_idx:
+                Smsg = event_msg[start_idx:end_idx]
+                MatchAction(push_id,record,Smsg)
+                includeCount = includeCount+1
+        
         matchData = airtable.search('rule','include',sort='CreateTime')
         
-        for record in matchData:
-            rKey = record['fields']['Key']
-            if event_msg.find(rKey) > -1 :
-                includeCount = includeCount+1
-                MatchAction(push_id,record)
         if includeCount==0:
-            matchData = airtable.search('Type','funcS',sort='CreateTime')
             for record in matchData:
-                rKeys = record['fields']['Key'].split('%s')
-                start_idx = -1
-                end_idx = -1
-                if len(rKeys) > 1:
-                    start_idx = event_msg.rindex(rKeys[0]) + len(rKeys[0])
-                    end_idx = event_msg.rindex(rKeys[1],start_idx)
-                if start_idx > -1 and end_idx>start_idx:
-                    Smsg = event_msg[start_idx:end_idx]
-                    MatchAction(push_id,record,Smsg)
-                    
+                rKey = record['fields']['Key']
+                if event_msg.find(rKey) > -1 :
+                    MatchAction(push_id,record)
+        
         #print(matchData) 
     else:
         #print(matchData)
