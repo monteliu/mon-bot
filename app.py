@@ -78,6 +78,11 @@ def MatchAction(push_id,matchData,Smsg=''):
     elif matchData['fields']['Type'] == 'text':
         msg = matchData['fields']['text']
         bot.push_message(push_id,TextSendMessage(text=msg))
+    elif matchData['fields']['Type'] == 'textRandom':
+        msgs = matchData['fields']['text'].split('%s')
+        idx = random.randrange(0,len(msgs))
+        msg = msgs[idx]
+        bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'funcS':
         msg = matchData['fields']['text'].replace('%s',Smsg)
         bot.push_message(push_id,TextSendMessage(text=msg))
