@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+import random
 
 from requests import post
 
@@ -69,8 +70,11 @@ def MatchAction(push_id,matchData,Smsg=''):
         for imgdata in Images:
             image = imgdata['url']
             bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-        #image = matchData['fields']['image'][0]['url']
-        #bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+    elif matchData['fields']['Type'] == 'imageRandom':
+        Images = matchData['fields']['image']
+        idx = random.randrange(0,len(Images))
+        image = Images[idx]['url']
+        bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
     elif matchData['fields']['Type'] == 'text':
         msg = matchData['fields']['text']
         bot.push_message(push_id,TextSendMessage(text=msg))
