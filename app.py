@@ -88,8 +88,8 @@ def MatchAction(push_id,matchData,Smsg=''):
         bot.push_message(push_id,TextSendMessage(text=msg))
     
     evnetTime = time.gmtime()
-    time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
-    fields = {'eventCount': matchData['fields']['eventCount']+1 }
+    etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
+    fields = {'eventCount': matchData['fields']['eventCount']+1,'evnetTime',etString}
     airtable.update(matchData['id'], fields)    
 
 
