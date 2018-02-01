@@ -95,11 +95,11 @@ def MatchAction(push_id,matchData,Smsg=''):
         for imgC_Id in ImgCar_Ids:
             imgCar = imgCarouseltable.get(imgC_Id)
             if imgCar['fields']['Type'] == 'message':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['image'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
             elif imgCar['fields']['Type'] == 'uri':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['image'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
             elif imgCar['fields']['Type'] == 'postback':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['image'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
         bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
     
     evnetTime = time.gmtime()
