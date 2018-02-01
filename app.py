@@ -86,7 +86,12 @@ def MatchAction(push_id,matchData,Smsg=''):
     elif matchData['fields']['Type'] == 'funcS':
         msg = matchData['fields']['text'].replace('%s',Smsg)
         bot.push_message(push_id,TextSendMessage(text=msg))
-        
+    
+    evnetTime = time.gmtime()
+    time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
+    fields = {'eventCount': matchData['fields']['enentCount']+1 , 'evnetTime':evnetTime}
+    airtable.update(matchData['id'], fields)    
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
