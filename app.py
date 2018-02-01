@@ -11,6 +11,8 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent, FollowEvent, UnfollowEvent, JoinEvent, LeaveEvent, PostbackEvent,
     TextMessage, StickerMessage, ImageMessage, TextSendMessage,ImageSendMessage,
+    ImageCarouselColumn,ImageCarouselTemplate,TemplateSendMessage,
+    MessageTemplateAction,URITemplateAction,PostbackTemplateAction,
 )
 from imgurpython import ImgurClient
 from airtable import Airtable
@@ -21,6 +23,7 @@ handler = WebhookHandler(os.environ.get('ChannelSecret'))
 bot = LineBotApi(os.environ.get('ChannelAccessToken'))
 server_url = os.environ.get('server_url')
 airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.environ['AIRTABLE_API_KEY'])
+imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_name_imgCarousel'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 
 
@@ -86,6 +89,18 @@ def MatchAction(push_id,matchData,Smsg=''):
     elif matchData['fields']['Type'] == 'funcS':
         msg = matchData['fields']['text'].replace('%s',Smsg)
         bot.push_message(push_id,TextSendMessage(text=msg))
+    elif matchData['fields']['Type'] == 'ImgCarousel':
+        ImgCar_Ids = matchData['fields']['ImgCarousel']
+        ImgCarouselCols = []
+        for imgC_Id in ImgCar_IDs:
+            imgCar = imgCarouseltable.get(imgC_Id)
+            if imgCar['fields']['Type'] == 'message':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=matchData['fields']['image'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
+            elif imgCar['fields']['Type'] == 'uri':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=matchData['fields']['image'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
+            elif imgCar['fields']['Type'] == 'postback':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=matchData['fields']['image'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
+        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
     
     evnetTime = time.gmtime()
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
@@ -217,6 +232,7 @@ def leave(event):
 @handler.add(PostbackEvent)
 def postback(event):
     _post('/postback', **get_id(event))
+    print(event)
 
 
 if __name__ == '__main__':
