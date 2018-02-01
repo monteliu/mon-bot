@@ -92,7 +92,7 @@ def MatchAction(push_id,matchData,Smsg=''):
     elif matchData['fields']['Type'] == 'ImgCarousel':
         ImgCar_Ids = matchData['fields']['ImgCarousel']
         ImgCarouselCols = []
-        for imgC_Id in ImgCar_IDs:
+        for imgC_Id in ImgCar_Ids:
             imgCar = imgCarouseltable.get(imgC_Id)
             if imgCar['fields']['Type'] == 'message':
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=matchData['fields']['image'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
