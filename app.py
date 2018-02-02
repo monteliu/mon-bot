@@ -118,22 +118,22 @@ def handle_message(event):
     print(event) 
     #r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     push_id = ''
-    hasUserData = false
+    hasUserData = False
     userdata = []
     if  event.source.type == 'user':
         push_id = event.source.user_id
         userdata = bot.get_profile(user_id=event.source.user_id)
-        hasUserData = true
+        hasUserData = True
     elif event.source.type == 'group':
         push_id = event.source.group_id
         if 'user_id' in event.source:
             userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
-            hasUserData = true
+            hasUserData = True
     elif event.source.type == 'room':
         push_id = event.source.room_id
         if 'user_id' in event.source:
             userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
-            hasUserData = true
+            hasUserData = True
     event_msg = event.message.text
          
     passUser = passList.match('UserId',userdata.user_id)    
