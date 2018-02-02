@@ -136,12 +136,14 @@ def handle_message(event):
             hasUserData = True
     event_msg = event.message.text
          
-    passUser = passList.match('UserId',userdata.user_id)    
+    passUser = {}
+    
 
     msg = ''
     image = ''
     UserName = ''
     if hasUserData :
+        passUser = passList.match('UserId',userdata.user_id)    
         UserName =userdata.display_name
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
