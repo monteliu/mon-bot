@@ -180,7 +180,7 @@ def handle_message(event):
         if matchData['fields']['Type'] == 'passOn':
             msg = matchData['fields']['text'].replace('%s',userdata.display_name)
             bot.push_message(push_id,TextSendMessage(text=msg))
-            fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":userdata.picture_url}
+            fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
             passList.insert(fields)
             return
 
