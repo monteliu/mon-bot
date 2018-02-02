@@ -80,16 +80,16 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
         image = Images[idx]['url']
         bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
     elif matchData['fields']['Type'] == 'text':
-        msg = matchData['fields']['text'].replace('%name',UserName)
+        msg = matchData['fields']['text']
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'textRandom':
         msgs = matchData['fields']['text'].split('%s')
         idx = random.randrange(0,len(msgs))
-        msg = msgs[idx].replace('%name',UserName)
+        msg = msgs[idx]
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'funcS':
         msg = matchData['fields']['text'].replace('%s',Smsg)
-        msg = msg.replace('%name',UserName)
+        #msg = msg.replace('%name',UserName)
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'ImgCarousel':
         ImgCar_Ids = matchData['fields']['ImgCarousel']
@@ -102,7 +102,7 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
             elif imgCar['fields']['Type'] == 'postback':
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
-        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'].replace('%name',UserName) ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
+        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
 
     evnetTime = time.gmtime()
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
@@ -118,40 +118,40 @@ def handle_message(event):
     print(event) 
     #r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     push_id = ''
-    hasUserData = False
+    # hasUserData = False
     userdata = []
     if  event.source.type == 'user':
         push_id = event.source.user_id
-        userdata = bot.get_profile(user_id=event.source.user_id)
-        hasUserData = True
+        # userdata = bot.get_profile(user_id=event.source.user_id)
+        # hasUserData = True
     elif event.source.type == 'group':
         push_id = event.source.group_id
-        if event.source.user_id is not None:
-            userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
-            hasUserData = True
+        # if event.source.user_id is not None:
+            # userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
+            # hasUserData = True
     elif event.source.type == 'room':
         push_id = event.source.room_id
-        if event.source.user_id is not None:
-            userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
-            hasUserData = True
+        # if event.source.user_id is not None:
+            # userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
+            # hasUserData = True
     event_msg = event.message.text
          
-    passUser = {}
+    # passUser = {}
     
 
     msg = ''
     image = ''
     UserName = ''
-    if hasUserData :
-        passUser = passList.match('UserId',userdata.user_id)    
-        UserName =userdata.display_name
+    # if hasUserData :
+        # passUser = passList.match('UserId',userdata.user_id)    
+        # UserName =userdata.display_name
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
-        if 'id' in passUser:
-            print('pass')
-            print(userdata)
-            return
+        # if 'id' in passUser:
+            # print('pass')
+            # print(userdata)
+            # return
         includeCount = 0
         
         matchData = airtable.search('Type','funcS',sort='CreateTime')
@@ -178,24 +178,24 @@ def handle_message(event):
         #print(matchData) 
     else:
         
-        if matchData['fields']['Type'] == 'passOff':
-            if hasUserData :
-                msg = matchData['fields']['text'].replace('%name',UserName)
-                bot.push_message(push_id,TextSendMessage(text=msg))
-                if 'id' in passUser:
-                    passList.delete(passUser['id'])
-                return
-        if 'id' in passUser:
-            print('pass Name:'+UserName+' UserId:'+userdata.user_id)
-            return
+        # if matchData['fields']['Type'] == 'passOff':
+            # if hasUserData :
+                # msg = matchData['fields']['text'].replace('%name',UserName)
+                # bot.push_message(push_id,TextSendMessage(text=msg))
+                # if 'id' in passUser:
+                    # passList.delete(passUser['id'])
+                # return
+        # if 'id' in passUser:
+            # print('pass Name:'+UserName+' UserId:'+userdata.user_id)
+            # return
         
-        if matchData['fields']['Type'] == 'passOn':
-            if hasUserData :
-                msg = matchData['fields']['text'].replace('%name',UserName)
-                bot.push_message(push_id,TextSendMessage(text=msg))
-                fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
-                passList.insert(fields)
-            return
+        # if matchData['fields']['Type'] == 'passOn':
+            # if hasUserData :
+                # msg = matchData['fields']['text'].replace('%name',UserName)
+                # bot.push_message(push_id,TextSendMessage(text=msg))
+                # fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
+                # passList.insert(fields)
+            # return
 
         #print(matchData)
         MatchAction(push_id,matchData,UserName=UserName)
@@ -214,8 +214,7 @@ def handle_message(event):
     #bot.push_message(push_id,TextSendMessage(text=msg))
     
     ##bot.reply_message(event.reply_token, ImageMessage(original_content_url=image,preview_image_url=image))
-
-
+    
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker(event):
     _post('/sticker', **get_id(event))
