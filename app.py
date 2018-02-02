@@ -118,23 +118,31 @@ def handle_message(event):
     print(event) 
     #r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     push_id = ''
+    hasUserData = false
     userdata = []
     if  event.source.type == 'user':
         push_id = event.source.user_id
         userdata = bot.get_profile(user_id=event.source.user_id)
+        hasUserData = true
     elif event.source.type == 'group':
         push_id = event.source.group_id
-        userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
+        if 'user_id' in event.source:
+            userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
+            hasUserData = true
     elif event.source.type == 'room':
         push_id = event.source.room_id
-        userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
+        if 'user_id' in event.source:
+            userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
+            hasUserData = true
     event_msg = event.message.text
          
     passUser = passList.match('UserId',userdata.user_id)    
 
     msg = ''
     image = ''
-    UserName = userdata.display_name
+    UserName = ''
+    if hasUserData :
+        UserName =userdata.display_name
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
@@ -169,19 +177,22 @@ def handle_message(event):
     else:
         
         if matchData['fields']['Type'] == 'passOff':
-            msg = matchData['fields']['text'].replace('%name',UserName)
-            bot.push_message(push_id,TextSendMessage(text=msg))
-            passList.delete(passUser['id'])
-            return
+            if hasUserData :
+                msg = matchData['fields']['text'].replace('%name',UserName)
+                bot.push_message(push_id,TextSendMessage(text=msg))
+                if 'id' in passUser:
+                    passList.delete(passUser['id'])
+                return
         if 'id' in passUser:
-            print('pass Name:'+userdata.display_name+' UserId:'+userdata.user_id)
+            print('pass Name:'+UserName+' UserId:'+userdata.user_id)
             return
         
         if matchData['fields']['Type'] == 'passOn':
-            msg = matchData['fields']['text'].replace('%name',UserName)
-            bot.push_message(push_id,TextSendMessage(text=msg))
-            fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
-            passList.insert(fields)
+            if hasUserData :
+                msg = matchData['fields']['text'].replace('%name',UserName)
+                bot.push_message(push_id,TextSendMessage(text=msg))
+                fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
+                passList.insert(fields)
             return
 
         #print(matchData)
