@@ -173,8 +173,7 @@ def handle_message(event):
             passList.delete(passUser['id'])
             return
         if 'id' in passUser:
-            print('pass')
-            print(userdata)
+            print('pass Name:'+userdata.display_name+' UserId:'+userdata.user_id)
             return
         
         if matchData['fields']['Type'] == 'passOn':
