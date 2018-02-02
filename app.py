@@ -67,7 +67,7 @@ def callback():
 
     return 'OK'
 
-def MatchAction(push_id,matchData,userData,Smsg=''):
+def MatchAction(push_id,matchData,Smsg=''):
     print(matchData)
     if matchData['fields']['Type'] == 'image':
         Images = matchData['fields']['image']
@@ -156,7 +156,7 @@ def handle_message(event):
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
                 Smsg = event_msg[start_idx:end_idx]
-                MatchAction(push_id,record,userdata,Smsg)
+                MatchAction(push_id,record,Smsg)
                 includeCount = includeCount+1
         
         matchData = airtable.search('rule','include',sort='CreateTime')
@@ -165,7 +165,7 @@ def handle_message(event):
             for record in matchData:
                 rKey = record['fields']['Key']
                 if event_msg.find(rKey) > -1 :
-                    MatchAction(push_id,,record,userdata)
+                    MatchAction(push_id,record)
         
         #print(matchData) 
     else:
@@ -188,7 +188,7 @@ def handle_message(event):
             return
 
         #print(matchData)
-        MatchAction(push_id,matchData,userdata)
+        MatchAction(push_id,matchData)
         # if matchData['fields']['Type'] == 'image':
             # Images = matchData['fields']['image']
             # for imgdata in Images:
