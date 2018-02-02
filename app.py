@@ -24,6 +24,7 @@ bot = LineBotApi(os.environ.get('ChannelAccessToken'))
 server_url = os.environ.get('server_url')
 airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.environ['AIRTABLE_API_KEY'])
 imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_name_imgCarousel'),os.environ['AIRTABLE_API_KEY'])
+passList = Airtable(os.environ.get('base_key'), os.environ.get('table_name_PassList'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 
 
@@ -66,7 +67,7 @@ def callback():
 
     return 'OK'
 
-def MatchAction(push_id,matchData,Smsg=''):
+def MatchAction(push_id,matchData,userData,Smsg=''):
     print(matchData)
     if matchData['fields']['Type'] == 'image':
         Images = matchData['fields']['image']
@@ -101,7 +102,7 @@ def MatchAction(push_id,matchData,Smsg=''):
             elif imgCar['fields']['Type'] == 'postback':
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
         bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
-    
+
     evnetTime = time.gmtime()
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
     fields = {"eventCount": matchData['fields']['eventCount']+1,"eventTime":etString}
@@ -123,12 +124,26 @@ def handle_message(event):
     elif event.source.type == 'room':
         push_id = event.source.room_id
     event_msg = event.message.text
+    userdata = []
+    if len(event.source.group_id) > 0:
+        userdata = bot.get_group_member_profile(user_id=event.source.user_id,group_id=event.source.group_id)
+    elif len(event.source.room_id) > 0:
+        userdata = bot.get_room_member_profile(user_id=event.source.user_id,room_id=event.source.room_id)
+    else:
+        userdata = bot.get_profile(user_id=event.source.user_id)
+        
+    passUser = passList.match('Id',userdata.userId)    
+
     msg = ''
     image = ''
+ 
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
-    
+        if 'id' in passUser:
+            print('pass')
+            print(userdata)
+            return
         includeCount = 0
         
         matchData = airtable.search('Type','funcS',sort='CreateTime')
@@ -141,7 +156,7 @@ def handle_message(event):
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
                 Smsg = event_msg[start_idx:end_idx]
-                MatchAction(push_id,record,Smsg)
+                MatchAction(push_id,record,userdata,Smsg)
                 includeCount = includeCount+1
         
         matchData = airtable.search('rule','include',sort='CreateTime')
@@ -150,12 +165,30 @@ def handle_message(event):
             for record in matchData:
                 rKey = record['fields']['Key']
                 if event_msg.find(rKey) > -1 :
-                    MatchAction(push_id,record)
+                    MatchAction(push_id,,record,userdata)
         
         #print(matchData) 
     else:
+        
+        if matchData['fields']['Type'] == 'passOff':
+            msg = matchData['fields']['text'].replace('%s',userdata.displayName)
+            bot.push_message(push_id,TextSendMessage(text=msg))
+            passList.delete(passUser['id'])
+            return
+        if 'id' in passUser:
+            print('pass')
+            print(userdata)
+            return
+        
+        if matchData['fields']['Type'] == 'passOn':
+            msg = matchData['fields']['text'].replace('%s',userdata.displayName)
+            bot.push_message(push_id,TextSendMessage(text=msg))
+            fields = {"Name": userdata.displayName,"UserId":userdata.userId,"Image":userdata.pictureUrl}
+            passList.insert(fields)
+            return
+
         #print(matchData)
-        MatchAction(push_id,matchData)
+        MatchAction(push_id,matchData,userdata)
         # if matchData['fields']['Type'] == 'image':
             # Images = matchData['fields']['image']
             # for imgdata in Images:
