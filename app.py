@@ -129,7 +129,7 @@ def handle_message(event):
         userdata = bot.get_room_member_profile(user_id=event.source.user_id,room_id=event.source.room_id)
     event_msg = event.message.text
          
-    passUser = passList.match('UserId',userdata.userId)    
+    passUser = passList.match('UserId',userdata.user_id)    
 
     msg = ''
     image = ''
@@ -168,7 +168,7 @@ def handle_message(event):
     else:
         
         if matchData['fields']['Type'] == 'passOff':
-            msg = matchData['fields']['text'].replace('%s',userdata.displayName)
+            msg = matchData['fields']['text'].replace('%s',userdata.display_name)
             bot.push_message(push_id,TextSendMessage(text=msg))
             passList.delete(passUser['id'])
             return
@@ -178,9 +178,9 @@ def handle_message(event):
             return
         
         if matchData['fields']['Type'] == 'passOn':
-            msg = matchData['fields']['text'].replace('%s',userdata.displayName)
+            msg = matchData['fields']['text'].replace('%s',userdata.display_name)
             bot.push_message(push_id,TextSendMessage(text=msg))
-            fields = {"Name": userdata.displayName,"UserId":userdata.userId,"Image":userdata.pictureUrl}
+            fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":userdata.picture_url}
             passList.insert(fields)
             return
 
