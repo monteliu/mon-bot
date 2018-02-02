@@ -126,12 +126,12 @@ def handle_message(event):
         hasUserData = True
     elif event.source.type == 'group':
         push_id = event.source.group_id
-        if event.source.user_id is None:
+        if event.source.user_id is not None:
             userdata = bot.get_group_member_profile(group_id=event.source.group_id,user_id=event.source.user_id)
             hasUserData = True
     elif event.source.type == 'room':
         push_id = event.source.room_id
-        if event.source.user_id is None:
+        if event.source.user_id is not None:
             userdata = bot.get_room_member_profile(room_id=event.source.room_id,user_id=event.source.user_id)
             hasUserData = True
     event_msg = event.message.text
