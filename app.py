@@ -67,7 +67,7 @@ def callback():
 
     return 'OK'
 
-def MatchAction(push_id,matchData,Smsg=''):
+def MatchAction(push_id,matchData,Smsg='',UserName=''):
     print(matchData)
     if matchData['fields']['Type'] == 'image':
         Images = matchData['fields']['image']
@@ -80,15 +80,16 @@ def MatchAction(push_id,matchData,Smsg=''):
         image = Images[idx]['url']
         bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
     elif matchData['fields']['Type'] == 'text':
-        msg = matchData['fields']['text']
+        msg = matchData['fields']['text'].replace('%name',UserName)
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'textRandom':
         msgs = matchData['fields']['text'].split('%s')
         idx = random.randrange(0,len(msgs))
-        msg = msgs[idx]
+        msg = msgs[idx].replace('%name',UserName)
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'funcS':
         msg = matchData['fields']['text'].replace('%s',Smsg)
+        msg = msg.replace('%name',UserName)
         bot.push_message(push_id,TextSendMessage(text=msg))
     elif matchData['fields']['Type'] == 'ImgCarousel':
         ImgCar_Ids = matchData['fields']['ImgCarousel']
@@ -101,7 +102,7 @@ def MatchAction(push_id,matchData,Smsg=''):
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
             elif imgCar['fields']['Type'] == 'postback':
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
-        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
+        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'].replace('%name',UserName) ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
 
     evnetTime = time.gmtime()
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
@@ -133,7 +134,7 @@ def handle_message(event):
 
     msg = ''
     image = ''
- 
+    UserName = userdata.display_name
     #print(airtable.match('Key',msg))
     matchData = airtable.match('Key',event_msg)
     if 'id' not in matchData:
@@ -153,7 +154,7 @@ def handle_message(event):
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
                 Smsg = event_msg[start_idx:end_idx]
-                MatchAction(push_id,record,Smsg)
+                MatchAction(push_id,record,Smsg,UserName)
                 includeCount = includeCount+1
         
         matchData = airtable.search('rule','include',sort='CreateTime')
@@ -162,13 +163,13 @@ def handle_message(event):
             for record in matchData:
                 rKey = record['fields']['Key']
                 if event_msg.find(rKey) > -1 :
-                    MatchAction(push_id,record)
+                    MatchAction(push_id,record,UserName=UserName)
         
         #print(matchData) 
     else:
         
         if matchData['fields']['Type'] == 'passOff':
-            msg = matchData['fields']['text'].replace('%s',userdata.display_name)
+            msg = matchData['fields']['text'].replace('%name',UserName)
             bot.push_message(push_id,TextSendMessage(text=msg))
             passList.delete(passUser['id'])
             return
@@ -177,14 +178,14 @@ def handle_message(event):
             return
         
         if matchData['fields']['Type'] == 'passOn':
-            msg = matchData['fields']['text'].replace('%s',userdata.display_name)
+            msg = matchData['fields']['text'].replace('%name',UserName)
             bot.push_message(push_id,TextSendMessage(text=msg))
             fields = {"Name": userdata.display_name,"UserId":userdata.user_id,"Image":[{"url":userdata.picture_url}]}
             passList.insert(fields)
             return
 
         #print(matchData)
-        MatchAction(push_id,matchData)
+        MatchAction(push_id,matchData,UserName=UserName)
         # if matchData['fields']['Type'] == 'image':
             # Images = matchData['fields']['image']
             # for imgdata in Images:
