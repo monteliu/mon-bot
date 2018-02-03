@@ -24,7 +24,7 @@ bot = LineBotApi(os.environ.get('ChannelAccessToken'))
 server_url = os.environ.get('server_url')
 airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.environ['AIRTABLE_API_KEY'])
 imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_name_imgCarousel'),os.environ['AIRTABLE_API_KEY'])
-passList = Airtable(os.environ.get('base_key'), os.environ.get('table_name_PassList'),os.environ['AIRTABLE_API_KEY'])
+#passList = Airtable(os.environ.get('base_key'), os.environ.get('table_name_PassList'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 
 
@@ -115,7 +115,7 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event) 
+    #print(event) 
     #r = _post('/text', **get_id(event), message=event.message.text, reply_token=event.reply_token)
     push_id = ''
     # hasUserData = False
