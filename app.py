@@ -28,7 +28,7 @@ imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_na
 SystemAction = Airtable(os.environ.get('base_key'), os.environ.get('table_name_System'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 StopSet = 0
-BotStop = {}
+
 def _post(endpoint, **json):
     try:
         print(endpoint)
@@ -68,61 +68,7 @@ def callback():
 
     return 'OK'
 
-def MatchAction(push_id,matchData,Smsg='',UserName=''):
-    print(matchData)
-    eventTime = time.gmtime()
-    etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
-    
-    if matchData['fields']['Type'] == 'image':
-        Images = matchData['fields']['image']
-        for imgdata in Images:
-            image = imgdata['url']
-            bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-    elif matchData['fields']['Type'] == 'imageRandom':
-        Images = matchData['fields']['image']
-        idx = random.randrange(0,len(Images))
-        image = Images[idx]['url']
-        bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
-    elif matchData['fields']['Type'] == 'text':
-        msg = matchData['fields']['text']
-        bot.push_message(push_id,TextSendMessage(text=msg))
-    elif matchData['fields']['Type'] == 'textRandom':
-        msgs = matchData['fields']['text'].split('%s')
-        idx = random.randrange(0,len(msgs))
-        msg = msgs[idx]
-        bot.push_message(push_id,TextSendMessage(text=msg))
-    elif matchData['fields']['Type'] == 'funcS':
-        msg = matchData['fields']['text'].replace('%s',Smsg)
-        #msg = msg.replace('%name',UserName)
-        bot.push_message(push_id,TextSendMessage(text=msg))
-    elif matchData['fields']['Type'] == 'ImgCarousel':
-        ImgCar_Ids = matchData['fields']['ImgCarousel']
-        ImgCarouselCols = []
-        for imgC_Id in ImgCar_Ids:
-            imgCar = imgCarouseltable.get(imgC_Id)
-            if imgCar['fields']['Type'] == 'message':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
-            elif imgCar['fields']['Type'] == 'uri':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
-            elif imgCar['fields']['Type'] == 'postback':
-                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
-        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
-    elif matchData['fields']['Type'] == 'STOP':
-        sysfields = {"UpdateTime":etString}
-        SystemAction.update(BotStop['id'], sysfields)
-        msg = matchData['fields']['text'].replace('%stoptime',StopSet)
-        bot.push_message(push_id,TextSendMessage(text=msg))
-    
-    eventCount = 0
-    try:
-        eventCount = int(matchData['fields']['eventCount'])
-    except ValueError:
-        pass  # it was a string, not an int.
-    fields = {"eventCount": eventCount+1,"eventTime":etString}
-    airtable.update(matchData['id'], fields)  
-    # fields = {'eventTime':eventTime}
-    # print(fields)
-    # airtable.update(matchData['id'], fields)     
+ 
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -188,7 +134,7 @@ def handle_message(event):
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
                 Smsg = event_msg[start_idx:end_idx]
-                MatchAction(push_id,record,Smsg,UserName)
+                MatchAction(push_id,record,BotStop,Smsg,UserName)
                 includeCount = includeCount+1
         
         matchData = airtable.search('rule','include',sort='CreateTime')
@@ -197,7 +143,7 @@ def handle_message(event):
             for record in matchData:
                 rKey = record['fields']['Key']
                 if event_msg.find(rKey) > -1 :
-                    MatchAction(push_id,record,UserName=UserName)
+                    MatchAction(push_id,record,BotStop,UserName=UserName)
         
         #print(matchData) 
     else:
@@ -222,7 +168,7 @@ def handle_message(event):
             # return
 
         #print(matchData)
-        MatchAction(push_id,matchData,UserName=UserName)
+        MatchAction(push_id,matchData,BotStop,UserName=UserName)
         # if matchData['fields']['Type'] == 'image':
             # Images = matchData['fields']['image']
             # for imgdata in Images:
@@ -300,6 +246,61 @@ def postback(event):
     _post('/postback', **get_id(event))
     print(event)
 
+def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
+    print(matchData)
+    eventTime = time.gmtime()
+    etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
+    
+    if matchData['fields']['Type'] == 'image':
+        Images = matchData['fields']['image']
+        for imgdata in Images:
+            image = imgdata['url']
+            bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+    elif matchData['fields']['Type'] == 'imageRandom':
+        Images = matchData['fields']['image']
+        idx = random.randrange(0,len(Images))
+        image = Images[idx]['url']
+        bot.push_message(push_id,ImageSendMessage(original_content_url=image,preview_image_url=image))
+    elif matchData['fields']['Type'] == 'text':
+        msg = matchData['fields']['text']
+        bot.push_message(push_id,TextSendMessage(text=msg))
+    elif matchData['fields']['Type'] == 'textRandom':
+        msgs = matchData['fields']['text'].split('%s')
+        idx = random.randrange(0,len(msgs))
+        msg = msgs[idx]
+        bot.push_message(push_id,TextSendMessage(text=msg))
+    elif matchData['fields']['Type'] == 'funcS':
+        msg = matchData['fields']['text'].replace('%s',Smsg)
+        #msg = msg.replace('%name',UserName)
+        bot.push_message(push_id,TextSendMessage(text=msg))
+    elif matchData['fields']['Type'] == 'ImgCarousel':
+        ImgCar_Ids = matchData['fields']['ImgCarousel']
+        ImgCarouselCols = []
+        for imgC_Id in ImgCar_Ids:
+            imgCar = imgCarouseltable.get(imgC_Id)
+            if imgCar['fields']['Type'] == 'message':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=MessageTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'])))
+            elif imgCar['fields']['Type'] == 'uri':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=URITemplateAction(label=imgCar['fields']['label'],uri=imgCar['fields']['uri'])))
+            elif imgCar['fields']['Type'] == 'postback':
+                ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
+        bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
+    elif matchData['fields']['Type'] == 'STOP':
+        sysfields = {"UpdateTime":etString}
+        SystemAction.update(BotStop['id'], sysfields)
+        msg = matchData['fields']['text'].replace('%stoptime',StopSet)
+        bot.push_message(push_id,TextSendMessage(text=msg))
+    
+    eventCount = 0
+    try:
+        eventCount = int(matchData['fields']['eventCount'])
+    except ValueError:
+        pass  # it was a string, not an int.
+    fields = {"eventCount": eventCount+1,"eventTime":etString}
+    airtable.update(matchData['id'], fields)  
+    # fields = {'eventTime':eventTime}
+    # print(fields)
+    # airtable.update(matchData['id'], fields)        
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
