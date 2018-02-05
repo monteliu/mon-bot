@@ -27,7 +27,6 @@ airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.
 imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_name_imgCarousel'),os.environ['AIRTABLE_API_KEY'])
 SystemAction = Airtable(os.environ.get('base_key'), os.environ.get('table_name_System'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
-StopSet = 0
 
 def _post(endpoint, **json):
     try:
@@ -288,7 +287,7 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     elif matchData['fields']['Type'] == 'STOP':
         sysfields = {"UpdateTime":etString}
         SystemAction.update(BotStop['id'], sysfields)
-        msg = matchData['fields']['text'].replace('%stoptime',str(StopSet))
+        msg = matchData['fields']['text'].replace('%stoptime',str(BotStop['fields']['Interval']))
         bot.push_message(push_id,TextSendMessage(text=msg))
     
     eventCount = 0
