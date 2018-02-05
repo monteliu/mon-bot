@@ -113,8 +113,10 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
         bot.push_message(push_id,TextSendMessage(text=msg))
     
     eventCount = 0
-    if is_number(matchData['fields']['eventCount']):
-        eventCount = matchData['fields']['eventCount']
+    try:
+        eventCount = int(matchData['fields']['eventCount'])
+    except ValueError:
+        pass  # it was a string, not an int.
     fields = {"eventCount": eventCount+1,"eventTime":etString}
     airtable.update(matchData['id'], fields)  
     # fields = {'eventTime':eventTime}
