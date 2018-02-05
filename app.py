@@ -288,7 +288,7 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     elif matchData['fields']['Type'] == 'STOP':
         sysfields = {"UpdateTime":etString}
         SystemAction.update(BotStop['id'], sysfields)
-        msg = matchData['fields']['text'].replace('%stoptime',StopSet)
+        msg = matchData['fields']['text'].replace('%stoptime',str(StopSet))
         bot.push_message(push_id,TextSendMessage(text=msg))
     
     eventCount = 0
