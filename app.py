@@ -187,7 +187,7 @@ def handle_message(event):
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker(event):
     _post('/sticker', **get_id(event))
-
+    print(event) 
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
