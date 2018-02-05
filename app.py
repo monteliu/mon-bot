@@ -24,10 +24,10 @@ bot = LineBotApi(os.environ.get('ChannelAccessToken'))
 server_url = os.environ.get('server_url')
 airtable = Airtable(os.environ.get('base_key'), os.environ.get('table_name'),os.environ['AIRTABLE_API_KEY'])
 imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_name_imgCarousel'),os.environ['AIRTABLE_API_KEY'])
-#passList = Airtable(os.environ.get('base_key'), os.environ.get('table_name_PassList'),os.environ['AIRTABLE_API_KEY'])
+SystemAction = Airtable(os.environ.get('base_key'), os.environ.get('table_name_System'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
-
-
+StopSet = 0
+BotStop = None
 def _post(endpoint, **json):
     try:
         print(endpoint)
@@ -69,6 +69,9 @@ def callback():
 
 def MatchAction(push_id,matchData,Smsg='',UserName=''):
     print(matchData)
+    eventTime = time.gmtime()
+    etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
+    
     if matchData['fields']['Type'] == 'image':
         Images = matchData['fields']['image']
         for imgdata in Images:
@@ -103,12 +106,18 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
             elif imgCar['fields']['Type'] == 'postback':
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
         bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
-
-    evnetTime = time.gmtime()
-    etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", evnetTime)
-    fields = {"eventCount": matchData['fields']['eventCount']+1,"eventTime":etString}
+    elif matchData['fields']['Type'] == 'STOP':
+        sysfields = {"UpdateTime":etString}
+        SystemAction.update(BotStop['id],sysfields)
+        msg = matchData['fields']['text'].replace('%stoptime',StopSet)
+        bot.push_message(push_id,TextSendMessage(text=msg))
+    
+    eventCount = 0
+    if is_number(matchData['fields']['eventCount']):
+        eventCount = matchData['fields']['eventCount']
+    fields = {"eventCount": eventCount+1,"eventTime":etString}
     airtable.update(matchData['id'], fields)  
-    # fields = {'evnetTime':evnetTime}
+    # fields = {'eventTime':eventTime}
     # print(fields)
     # airtable.update(matchData['id'], fields)     
 
@@ -137,8 +146,18 @@ def handle_message(event):
     event_msg = event.message.text
          
     # passUser = {}
-    
-
+     
+    BotStop = SystemAction.match('function','STOP')
+    if 'id' not in BotStop:
+        strStopTime = BotStop['fields']['UpdateTime']
+        StopTime = time.strptime(strStopTime, "%Y-%m-%dT%H:%M:%S.000Z")
+        StopDateTime = datetime.datetime(*StopTime[0:6])
+        StopSet = BotStop['fields']['Interval']
+        eventTime = time.gmtime()
+        eventDateTime = datetime.datetime(*eventTime[0:6])
+        if ((eventDateTime-StopDateTime).seconds) < (StopSet*60):
+            return
+        
     msg = ''
     image = ''
     UserName = ''
