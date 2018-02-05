@@ -28,7 +28,7 @@ imgCarouseltable = Airtable(os.environ.get('base_key'), os.environ.get('table_na
 SystemAction = Airtable(os.environ.get('base_key'), os.environ.get('table_name_System'),os.environ['AIRTABLE_API_KEY'])
 imgur = None
 StopSet = 0
-BotStop = None
+BotStop = {}
 def _post(endpoint, **json):
     try:
         print(endpoint)
