@@ -107,8 +107,8 @@ def MatchAction(push_id,matchData,Smsg='',UserName=''):
                 ImgCarouselCols.append(ImageCarouselColumn(image_url=imgCar['fields']['ImageUrl'][0]['url'],action=PostbackTemplateAction(label=imgCar['fields']['label'],text=imgCar['fields']['text'],data=imgCar['fields']['data'])))
         bot.push_message(push_id,TemplateSendMessage(alt_text=matchData['fields']['text'] ,template=ImageCarouselTemplate(columns=ImgCarouselCols)))
     elif matchData['fields']['Type'] == 'STOP':
-        sysfields = {"UpdateTime":etString}
-        SystemAction.update(BotStop['id],sysfields)
+        fields = {"UpdateTime":etString}
+        SystemAction.update(BotStop['id], sysfields)
         msg = matchData['fields']['text'].replace('%stoptime',StopSet)
         bot.push_message(push_id,TextSendMessage(text=msg))
     
