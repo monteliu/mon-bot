@@ -153,6 +153,7 @@ def handle_message(event):
     BotStop = SystemAction.match('function','STOP')
     if 'id' in BotStop:
         print(BotStop)
+        print(BotStop['id'])
         strStopTime = BotStop['fields']['UpdateTime']
         StopTime = time.strptime(strStopTime, "%Y-%m-%dT%H:%M:%S.000Z")
         StopDateTime = datetime.datetime(*StopTime[0:6])
