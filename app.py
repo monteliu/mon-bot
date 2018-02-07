@@ -227,18 +227,22 @@ def handle_image(event):
 @handler.add(FollowEvent)
 def follow(event):
     _post('/follow', **get_id(event), reply_token=event.reply_token)
+    print(event)
 
 @handler.add(UnfollowEvent)
 def unfollow(event):
     _post('/unfollow', **get_id(event))
+    print(event)
 
 @handler.add(JoinEvent)
 def join(event):
     _post('/join', **get_id(event), reply_token=event.reply_token)
+    print(event)
 
 @handler.add(LeaveEvent)
 def leave(event):
     _post('/leave', **get_id(event))
+    print(event)
 
 @handler.add(PostbackEvent)
 def postback(event):
