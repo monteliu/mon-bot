@@ -296,7 +296,7 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     
     eventCount = 0
     try:
-        return dic[key] == value
+        eventCount = matchData['fields']['eventCount']
     except KeyError:
         print('eventCount = 0')
         eventCount = 0
