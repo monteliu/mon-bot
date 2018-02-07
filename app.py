@@ -295,9 +295,10 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
         bot.push_message(push_id,TextSendMessage(text=msg))
     
     eventCount = 0
-    if isinstance(matchData['fields']['eventCount'],int):
-        eventCount = matchData['fields']['eventCount']
-    else:
+    try:
+        return dic[key] == value
+    except KeyError:
+        print('eventCount = 0')
         eventCount = 0
     fields = {"eventCount": eventCount+1,"eventTime":etString}
     airtable.update(matchData['id'], fields)  
