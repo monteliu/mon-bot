@@ -260,7 +260,7 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     
     TriggerInterval = int(os.environ.get('TriggerInterval'))
     if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
-        print("觸發時間小於"+TriggerInterval+"秒!")
+        print("觸發時間小於 "+str(TriggerInterval)+" 秒!")
         return
     
     print(matchData)
