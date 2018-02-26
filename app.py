@@ -254,14 +254,19 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     
     eventTime = time.gmtime()
     eventDateTime = datetime.datetime(*eventTime[0:6])
-    strPreTime = matchData['fields']['eventTime']
-    PreTime = time.strptime(strPreTime, "%Y-%m-%dT%H:%M:%S.000Z")
-    PreDateTime = datetime.datetime(*PreTime[0:6])
+    try:
+        strPreTime = matchData['fields']['eventTime']
+        PreTime = time.strptime(strPreTime, "%Y-%m-%dT%H:%M:%S.000Z")
+        PreDateTime = datetime.datetime(*PreTime[0:6])
+        
+        TriggerInterval = int(os.environ.get('TriggerInterval'))
+        if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
+            print("觸發時間小於 "+str(TriggerInterval)+" 秒!")
+            return
+    except KeyError:
+        print('eventTime = null')
+
     
-    TriggerInterval = int(os.environ.get('TriggerInterval'))
-    if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
-        print("觸發時間小於 "+str(TriggerInterval)+" 秒!")
-        return
     
     print(matchData)
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
