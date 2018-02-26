@@ -255,8 +255,8 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     eventTime = time.gmtime()
     eventDateTime = datetime.datetime(*eventTime[0:6])
     strPreTime = matchData['fields']['eventTime']
-    PreTime = time.strptime(strStopTime, "%Y-%m-%dT%H:%M:%S.000Z")
-    PreDateTime = datetime.datetime(*StopTime[0:6])
+    PreTime = time.strptime(strPreTime, "%Y-%m-%dT%H:%M:%S.000Z")
+    PreDateTime = datetime.datetime(*PreTime[0:6])
     
     TriggerInterval = int(os.environ.get('TriggerInterval'))
     if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
