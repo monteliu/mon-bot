@@ -251,7 +251,7 @@ def postback(event):
     print(event)
 
 def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
-    print(matchData)
+    
     eventTime = time.gmtime()
     eventDateTime = datetime.datetime(*eventTime[0:6])
     strPreTime = matchData['fields']['eventTime']
@@ -260,8 +260,10 @@ def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     
     TriggerInterval = int(os.environ.get('TriggerInterval'))
     if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
+        print("觸發時間小於"+TriggerInterval+"秒!")
         return
     
+    print(matchData)
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
     
     if matchData['fields']['Type'] == 'image':
