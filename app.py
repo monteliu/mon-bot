@@ -129,10 +129,10 @@ def handle_message(event):
             start_idx = -1
             end_idx = -1
             if len(rKeys) > 1:
-                start_idx = event_msg.find(rKeys[0]))
+                start_idx = event_msg.find(rKeys[0])
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
-                start_idx = start_idx + len(rKeys[0]
+                start_idx = start_idx + len(rKeys[0])
                 Smsg = event_msg[start_idx:end_idx]
                 MatchAction(push_id,record,BotStop,Smsg,UserName)
                 includeCount = includeCount+1
