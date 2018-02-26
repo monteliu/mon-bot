@@ -129,9 +129,10 @@ def handle_message(event):
             start_idx = -1
             end_idx = -1
             if len(rKeys) > 1:
-                start_idx = event_msg.find(rKeys[0]) + len(rKeys[0])
+                start_idx = event_msg.find(rKeys[0]))
                 end_idx = event_msg.find(rKeys[1],start_idx)
             if start_idx > -1 and end_idx>start_idx:
+                start_idx = start_idx + len(rKeys[0]
                 Smsg = event_msg[start_idx:end_idx]
                 MatchAction(push_id,record,BotStop,Smsg,UserName)
                 includeCount = includeCount+1
@@ -252,6 +253,15 @@ def postback(event):
 def MatchAction(push_id,matchData,BotStop,Smsg='',UserName=''):
     print(matchData)
     eventTime = time.gmtime()
+    eventDateTime = datetime.datetime(*eventTime[0:6])
+    strPreTime = matchData['fields']['eventTime']
+    PreTime = time.strptime(strStopTime, "%Y-%m-%dT%H:%M:%S.000Z")
+    PreDateTime = datetime.datetime(*StopTime[0:6])
+    
+    TriggerInterval = int(os.environ.get('TriggerInterval'))
+    if ((eventDateTime-PreDateTime).seconds) < TriggerInterval:
+        return
+    
     etString =time.strftime("%Y-%m-%dT%H:%M:%S.000Z", eventTime)
     
     if matchData['fields']['Type'] == 'image':
